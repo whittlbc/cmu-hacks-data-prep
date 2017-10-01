@@ -7,3 +7,5 @@ data/
 tmp/
 *.pem
 bin/
+trip_lengths.json
+trip_lengths_map.json
