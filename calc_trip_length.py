@@ -11,12 +11,11 @@ trip_lengths_map_file = 'trip_lengths_map.json'
 
 def find_trip_length(orig, dest):
   url = 'https://airport.api.aero/airport/distance/{}/{}'.format(orig, dest)
-
   r = requests.get(url, params={'user_key': stupidly_publicly_available_api_key_lol})
   resp_data = json.loads(r.text.lstrip('callback(').rstrip(')'))
 
   if not resp_data.get('success'):
-    print resp_data.get('errorMessage')
+    print(resp_data.get('errorMessage'))
     return None
 
   distance = resp_data.get('distance')
