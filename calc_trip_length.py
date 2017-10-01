@@ -42,7 +42,7 @@ if __name__ == '__main__':
   destinations = data.values[:, headers.index('off_point')]
   num_flights = len(origins)
 
-  print 'Calculating distances for {} flights...'.format(num_flights)
+  print('Calculating distances for {} flights...'.format(num_flights))
 
   trip_lengths_map = get_trip_lengths_map()
   trip_lengths = []
@@ -51,7 +51,7 @@ if __name__ == '__main__':
   try:
     for orig in origins:
       if i % 10 == 0 and i > 0:
-        print 'Done with {}/{}'.format(i, num_flights)
+        print('Done with {}/{}'.format(i, num_flights))
 
       dest = destinations[i]
       trip_key = '{}|{}'.format(orig, dest)
@@ -80,9 +80,9 @@ if __name__ == '__main__':
       i += 1
       sleep(1)  # Don't get kicked off API
   except KeyboardInterrupt:
-    print 'Bye Bye'
+    print('Bye Bye')
 
-  print 'Found {} distances for {} flights.'.format(len(trip_lengths), num_flights)
+  print('Found {} distances for {} flights.'.format(len(trip_lengths), num_flights))
 
   with open('trip_lengths.json', 'w+') as f:
     f.write(json.dumps(trip_lengths, indent=2))
