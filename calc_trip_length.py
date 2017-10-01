@@ -1,4 +1,5 @@
 import pandas
+from pandas import DataFrame
 import os
 import json
 import requests
@@ -39,12 +40,13 @@ if __name__ == '__main__':
   headers = list(data)
   origins = data.values[:, headers.index('board_point')]
   destinations = data.values[:, headers.index('off_point')]
+  uuids = data.values[:, headers.index('emcg_uuid')]
   num_flights = len(origins)
 
   print('Calculating distances for {} flights...'.format(num_flights))
 
   trip_lengths_map = get_trip_lengths_map()
-  trip_lengths = []
+  uuid_map = {}
   i = 0
 
   try:
@@ -52,6 +54,7 @@ if __name__ == '__main__':
       if i % 10 == 0 and i > 0:
         print('Done with {}/{}'.format(i, num_flights))
 
+      uuid = uuids[i]
       dest = destinations[i]
       trip_key = '{}|{}'.format(orig, dest)
       reverse_trip_key = '{}|{}'.format(dest, orig)
@@ -74,17 +77,24 @@ if __name__ == '__main__':
 
         trip_lengths_map[trip_key] = trip_length
 
-      trip_lengths.append(trip_length)
+      uuid_map[uuid] = trip_length
 
       i += 1
       sleep(1)  # Don't get kicked off API
   except KeyboardInterrupt:
     print('Bye Bye')
 
-  print('Found {} distances for {} flights.'.format(len(trip_lengths), num_flights))
+  print('Found {} distances for {} flights.'.format(len(uuid_map), num_flights))
 
   with open('trip_lengths.json', 'w+') as f:
-    f.write(json.dumps(trip_lengths, indent=2))
+    f.write(json.dumps(uuid_map, indent=2))
+
+  df = DataFrame.from_dict({
+    'emcg_uuid': list(uuid_map.keys()),
+    'flight_distance': list(uuid_map.values())
+  })
+
+  df.to_csv('{}/flight_distances.csv'.format(se_dir), index=False)
 
   with open(trip_lengths_map_file, 'w+') as f:
     f.write(json.dumps(trip_lengths_map, indent=2))
